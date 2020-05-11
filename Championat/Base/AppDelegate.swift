@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let layout = UICollectionViewFlowLayout()
             let viewModel = MainViewModel(networkService: NetworkService())
             let mainViewController = MainViewController(layout: layout, viewModel: viewModel)
-            self.window?.rootViewController = UINavigationController(rootViewController: mainViewController)
+            self.window?.rootViewController = UINavigationController(rootViewController: ViewController())
             self.window?.makeKeyAndVisible()
             
         }

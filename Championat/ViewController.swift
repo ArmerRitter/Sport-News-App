@@ -11,99 +11,146 @@ import SwiftSoup
 
 class ViewController: UIViewController {
 
-    var content: String!
-    
-    let dateLabelButton: UIButton = {
-        let button = UIButton()
-        //button.translatesAutoresizingMaskIntoConstraints = false
-        button.frame = CGRect(x: 100, y: 300, width: 100, height: 100)
-        button.layer.cornerRadius = 10
-        button.backgroundColor = .black
-
-        
-        button.layer.borderColor = UIColor.yellow.cgColor
-        button.layer.borderWidth = 2
-        //let shadow = UIBezierPath(roundedRect: button.bounds, cornerRadius: 10).cgPath
-        button.layer.shadowRadius = 5
-        button.layer.shadowColor = UIColor.yellow.cgColor
-        button.layer.shadowOffset = CGSize(width: 0.0, height: -10.0)
-        button.layer.shadowOpacity = 1.5
-        button.layer.masksToBounds = false
-       // button.layer.shadowPath = shadow
-
-        return button
-    }()
+    var collectionView: UICollectionView!
+    var layout = UICollectionViewFlowLayout()
+    var customLayout = CustomLayout()
+    var colors = [UIColor.red, UIColor.green, UIColor.blue, UIColor.yellow, UIColor.purple, UIColor.brown, UIColor.cyan, UIColor.gray, UIColor.footballColor, UIColor.hockeyColor, UIColor.lifeStyleColor, UIColor.basketballColor, UIColor.tennisColor, UIColor.cyberSportColor, UIColor.boxAndMMAColor]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-       
-            //#colorLiteral(red: 0.02745098039, green: 0.1333333333, blue: 0.2156862745, alpha: 1)
-        view.addSubview(dateLabelButton)
-        getRequest()
+        //collectionView.backgroundColor = .clear
+      
         
-        //parse()
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: customLayout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        
+        
+       // collectionView.setContentOffset(CGPoint(x: 0, y: 200), animated: true)
+        
+        view.addSubview(collectionView)
+       
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
     }
 
-    let session = URLSession.shared
-    func getRequest() {
-        
-        let baseUrl = URL(string: "https://www.championat.com/articles")
-         let url = baseUrl?.appendingPathComponent("1.html")
-        
-        var request = URLRequest(url: url!)
-        request.httpMethod = "GET"
-        
-        
-        session.dataTask(with: request) { (data: Data?, response, error) in
-            
-            guard let responseData = data else { return }
-            
-            guard let htmlContent = String(data: responseData, encoding: .utf8) else { return }
-            
-            do {
-                       let doc: Document = try SwiftSoup.parse(htmlContent)
-                
-                var article = [Article]()
-                
-                var arr: [Element] = try doc.select("div").filter { try $0.attr("class") == "article-preview" }
-                
-                var articles = try doc.getElementsByClass("article-preview")
-               // let res: String = classes.
-                
-               let dd = try arr.map {
-               
-                    article.append(Article(imageURL: try $0.select("img").attr("data-src"), title: try $0.select("a.article-preview__title").html(), date: try $0.select("div.article-preview__date").html(), sportTag: try $0.select("a.article-preview__tag").html()))
-                }
-                
-                print(article)
-                
-                let img = try arr[3].select("img").attr("data-src")
-                
-                let title = try arr[3].select("a.article-preview__title").html()
-                    //try arr[3].select("a").get(1).html()
-              //  let subtitle = try arr[3].select("a.article-preview__subtitle").html()
-                let date = try arr[3].select("div.article-preview__date").html()
-                let tag = try arr[3].select("a.article-preview__tag").html()
+    
+   
+    
+}
 
-                //print(img,"\n",
-                //      title,"\n","\n",date,"\n",tag,"\n")
-                
-                let tit = try arr.map { try $0.select("a.article-preview__title").html() }
-                
-                
-                   } catch  {
-                       print(error)
-                   }
-            
-        }.resume()
-        
+
+extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
+    
+//    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
+//
+//    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width - 16, height: 100)
     }
     
-    func parse() {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 15
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.backgroundColor = colors[indexPath.item]
+        cell.layer.shadowOffset = CGSize(width: 1, height: 1)
+        cell.layer.shadowColor = UIColor.white.cgColor
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+      //  print("\(indexPath.item)")
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var atr = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 0))
+
+       // collectionView.collectionViewLayout.invalidateLayout()
         
-   
+       //print(collectionView.contentOffset.y)
     }
     
 }
 
+class CustomLayout: UICollectionViewLayout {
+    
+    private var cacheAtributes = [UICollectionViewLayoutAttributes]()
+    private var contentSize: CGSize = .zero
+    
+    
+    override func prepare() {
+        super.prepare()
+        
+        contentSize = .zero
+        cacheAtributes.removeAll()
+        
+        guard let collectionView = collectionView else { return }
+        
+        for item in 0 ..< collectionView.numberOfItems(inSection: 0) {
+            var itemFrame = CGRect(origin: CGPoint(x: 10, y: 90 * item + 10), size: CGSize(width: collectionView.bounds.width - 20, height: 80))
+            
+            let indexPath = IndexPath(item: item, section: 0)
+            let atributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+            
+            
+            let yOffset = collectionView.contentOffset.y + 88
+            
+            if itemFrame.origin.y <= yOffset + 10 {
+                itemFrame.origin.y += yOffset - CGFloat(90 * item)
+                atributes.alpha = 1
+                //atributes.transform = .identity
+            }
+            
+            var k = CGFloat(90 * (item)) / yOffset
+            print(item, yOffset, k)
+            
+            if  itemFrame.origin.y <= yOffset + 90 && item > 0 && itemFrame.origin.y > yOffset + 10 {
+              //r  atributes.alpha = 0.5
+                atributes.transform = CGAffineTransform(translationX: 10 * 1, y: 0)
+            } else {
+                
+            }
+            
+            atributes.frame = itemFrame
+            
+           // atributes.zIndex = 300
+            
+            cacheAtributes.append(atributes)
+           }
+        print()
+        contentSize = CGSize(width: collectionView.bounds.width, height: CGFloat(90 * cacheAtributes.count))
+    }
+    
+    override var collectionViewContentSize: CGSize {
+        return contentSize
+    }
+    
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        
+        var atributeList = [UICollectionViewLayoutAttributes]()
+        
+        for atribute in cacheAtributes {
+            if atribute.frame.intersects(rect) {
+                atributeList.append(atribute)
+            }
+        }
+        return atributeList
+    }
+    
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        
+        return cacheAtributes[indexPath.item]
+    }
+    
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        return true
+    }
+}

@@ -46,14 +46,11 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         // Register cell classes
         self.collectionView!.register(ArticleCell.self, forCellWithReuseIdentifier: cellId)
-        
-        print(viewModel?.numberOfItems(), "num")
-        // Do any additional setup after loading the view.
     }
     
     @objc func add() {
         collectionView.reloadData()
-        collectionView.setNeedsLayout()
+       
     }
     
 //    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -105,13 +102,13 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
 
    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 16, height: 80)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: collectionView.frame.width - 16, height: 80)
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
+//    }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? ArticleCell

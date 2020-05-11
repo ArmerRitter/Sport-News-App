@@ -26,9 +26,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let win = UIWindow(windowScene: winScene)
         
         let layout = UICollectionViewFlowLayout()
+        let customLayout = ArticleCollectionViewLayout()
         let viewModel = MainViewModel(networkService: NetworkService())
         
-        let mainViewController = MainViewController(layout: layout, viewModel: viewModel)
+        let mainViewController = MainViewController(layout: customLayout, viewModel: viewModel)
         
         win.rootViewController =  UINavigationController(rootViewController: mainViewController)
         win.makeKeyAndVisible()
