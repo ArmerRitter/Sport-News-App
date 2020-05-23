@@ -1,7 +1,7 @@
 # Sport-News-App
 
-Sport News Client (example championat.com)
-I used html parsing with SwiftSoup
+Sport News Client (example championat.com)\n
+I html parsing with SwiftSoup
 
 Enjoy
 
