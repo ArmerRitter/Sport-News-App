@@ -14,7 +14,9 @@ protocol ArticleCellViewModelType: class {
     var articleDate: String { get }
     var sportTagColor: UIColor { get }
     var sportTagLabel: String { get }
+    var detailsURL: String { get }
     func getImage()
+    init(article: Article, networkService: NetworkServiceProtocol)
 }
 
 
@@ -22,7 +24,7 @@ class ArticleCellViewModel: ArticleCellViewModelType {
     
    
     private var article: Article
-    private let imageQueue = DispatchQueue(label: "Image Fetching", attributes: .concurrent)
+  //  private let imageQueue = DispatchQueue(label: "Image Fetching", attributes: .concurrent)
     var networkService: NetworkServiceProtocol!
     
     var articleImage: Box<UIImage?> = Box(nil)
@@ -67,6 +69,10 @@ class ArticleCellViewModel: ArticleCellViewModelType {
        return "• " + article.sportTag + " •"
     }
     
+    var detailsURL: String {
+        return article.detailsURL
+    }
+    
     func getImage() {
       
         networkService.getArticleImage(url: article.imageURL) { result in
@@ -77,15 +83,13 @@ class ArticleCellViewModel: ArticleCellViewModelType {
                     self.articleImage.value = UIImage(named: "default_Image")!
                 case .success(let image):
                     self.articleImage.value = image!
-                    print(image, "succ")
-                   
                 }
               }
            }
        
     }
     
-    init(article: Article, networkService: NetworkServiceProtocol) {
+    required init(article: Article, networkService: NetworkServiceProtocol) {
         self.article = article
         self.networkService = networkService
        

@@ -10,6 +10,7 @@ import UIKit
 
 protocol NetworkServiceProtocol {
     func getArticles(_ page: Int, completion: @escaping (Result<[Article]?,Error>) -> Void)
+    func getArticleDetails(url: String, completion: @escaping (Result<ArticleDetails?,Error>) -> Void)
     func getArticleImage(url: String, completion: @escaping (Result<UIImage?,Error>) -> Void)
 }
 
@@ -23,7 +24,6 @@ class NetworkService: NetworkServiceProtocol {
         
         guard let artilcesURL = baseURL?.appendingPathComponent("\(page).html")
             else { fatalError("url could not be configured") }
-        print(artilcesURL)
         
         URLSession.shared.dataTask(with: artilcesURL)  { (data: Data?, response, error) in
           
@@ -31,17 +31,37 @@ class NetworkService: NetworkServiceProtocol {
             completion(.failure(error))
             return
         }
-//            guard let resp = response else {
-//                print("resp");  return
-//            }
-         //   print(resp, "toto")
             
             guard let data = data, let content = String(data: data, encoding: .utf8) else { return }
             
            
             
-            let articles = Parser().decode(htmlContent: content)
+            let articles = ParserService().decodeArticlesList(htmlContent: content)
             completion(.success(articles))
+            
+        }.resume()
+    }
+    
+    func getArticleDetails(url: String, completion: @escaping (Result<ArticleDetails?,Error>) -> Void) {
+        
+        let baseURL = URL(string: "https://www.championat.com")
+        
+        guard let artilceDetailsURL = baseURL?.appendingPathComponent(url)
+            else { fatalError("url could not be configured") }
+        
+        URLSession.shared.dataTask(with: artilceDetailsURL)  { (data: Data?, response, error) in
+          
+        if let error = error {
+            completion(.failure(error))
+            return
+        }
+            
+            guard let data = data, let content = String(data: data, encoding: .utf8) else { return }
+            
+           
+            
+            let article = ParserService().decodeArticleDetails(htmlContent: content)
+            completion(.success(article))
             
         }.resume()
     }
@@ -49,19 +69,15 @@ class NetworkService: NetworkServiceProtocol {
     func getArticleImage(url: String, completion: @escaping (Result<UIImage?,Error>) -> Void) {
         
         guard let imageURL = URL(string: url) else {
-            fatalError("url could not be configured")
+            return
         }
-      //  print(imageURL)
+   
         URLSession.shared.dataTask(with: imageURL)  { (data: Data?, response, error) in
-                  
+                 
                 if let error = error {
                     completion(.failure(error))
                     return
                 }
-        //            guard let resp = response else {
-        //                print("resp");  return
-        //            }
-                 //   print(resp, "toto")
                     
                     guard let data = data, let image = UIImage(data: data) else { return }
                     

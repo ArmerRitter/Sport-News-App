@@ -28,40 +28,31 @@ class ArticleCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 3
         label.font = .boldSystemFont(ofSize: 15)
-       // label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .left
         return label
     }()
     
     let articleDateLabel: UILabel = {
         let label = UILabel()
-    //    label.text = "24 апреля 2020, 23:30"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12)
         label.textColor = .gray
         label.adjustsFontSizeToFitWidth = true
-       // label.backgroundColor = .yellow
         label.textAlignment = .left
         return label
     }()
     
     let sportTagLabel: UILabel = {
         let label = UILabel()
-    //    label.text = "24 апреля 2020, 23:30"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12)
-       // label.textColor = .gray
         label.adjustsFontSizeToFitWidth = true
-     //   label.backgroundColor = .lightGray
         label.textAlignment = .right
         return label
     }()
     
     let articleImage: UIImageView = {
-        let image = UIImageView()
-        //image.image = UIImage(named: "kokor")
-       // image.contentMode = .scaleToFill
-       // image.backgroundColor = .red
+       let image = UIImageView()
        image.translatesAutoresizingMaskIntoConstraints = false
        return image
     }()
@@ -91,16 +82,6 @@ class ArticleCell: UICollectionViewCell {
         articleDetailsStackView.leadingAnchor.constraint(equalTo: articleTitleLabel.leadingAnchor).isActive = true
         articleDetailsStackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         articleDetailsStackView.trailingAnchor.constraint(equalTo: articleTitleLabel.trailingAnchor).isActive = true
-        
-//        sportTagLabel.topAnchor.constraint(equalTo: articleTitleLabel.bottomAnchor).isActive = true
-//        sportTagLabel.leadingAnchor.constraint(equalTo: articleDateLabel.trailingAnchor,constant: 0).isActive = true
-//        sportTagLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
-//        sportTagLabel.trailingAnchor.constraint(equalTo: articleTitleLabel.trailingAnchor).isActive = true
-//
-//        articleDateLabel.topAnchor.constraint(equalTo: articleTitleLabel.bottomAnchor).isActive = true
-//        articleDateLabel.leadingAnchor.constraint(equalTo: articleImage.trailingAnchor,constant: 10).isActive = true
-//        articleDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
-//        articleDateLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
         
         
         articleTitleLabel.topAnchor.constraint(equalTo: topAnchor).isActive = true

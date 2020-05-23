@@ -9,11 +9,11 @@
 import Foundation
 
 
-struct Article {
+struct Article: Equatable {
     
     var imageURL: String
     var title: String
     var date: String
     var sportTag: String
-    
+    var detailsURL: String
 }

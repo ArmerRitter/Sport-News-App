@@ -12,35 +12,48 @@ import UIKit
 class MainViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     private let cellId = "ArticleCell"
-    let logo = UIImage(named: "logo8")
     var getNewPageFlag = false
     
     var viewModel: MainViewModelType?
     
+    let titleImage: UIImageView = {
+       let imageView = UIImageView()
+       let image = UIImage(named: "logo8")
+       imageView.contentMode = .scaleAspectFit
+       imageView.image = image
+       return imageView
+    }()
+    
+    let updateButton: UIButton = {
+       let button = UIButton()
+       button.backgroundColor = .championatColor
+       button.titleLabel?.font = .systemFont(ofSize: 14)
+       button.layer.cornerRadius = 10
+       button.isHidden = true
+        button.alpha = 0.9
+       button.translatesAutoresizingMaskIntoConstraints = false
+       return button
+    }()
+
+//MARK: ViewDidLoad
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel?.numberOfArticle.bind(listener: { [unowned self] number in
-            self.collectionView.reloadData()
-            self.getNewPageFlag = true
-        })
+        setupBinding()
+        setupView()
         
-        navigationController?.navigationBar.barStyle = UIBarStyle.black
-        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.02745098039, green: 0.1333333333, blue: 0.2156862745, alpha: 1)
-        navigationController?.navigationBar.isTranslucent = false
         
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.image = logo
-        navigationItem.titleView = imageView
         
         collectionView.backgroundColor = .white
-       // collectionView.indicatorStyle = .white
         
+        //Demo button
         let newRecordButton: UIBarButtonItem = {
             let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
+            
             return button
         }()
+        
         
         navigationItem.rightBarButtonItem = newRecordButton
         
@@ -50,21 +63,59 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     @objc func add() {
         collectionView.reloadData()
-       
+        updateButton.isHidden = false
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+        collectionView.contentOffset.y = -10
     }
     
-//    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//        var bottom = scrollView.contentOffset.y + scrollView.frame.size.height
-//        if bottom >= scrollView.contentSize.height - 100 {
-//            viewModel?.getArticles((viewModel?.numberOfArticle.value)! + 1)
-//        }
-//    }
+    func setupView() {
+        navigationController?.navigationBar.barStyle = UIBarStyle.black
+        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.02745098039, green: 0.1333333333, blue: 0.2156862745, alpha: 1)
+        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.titleView = titleImage
+        
+        view.addSubview(updateButton)
+        
+        NSLayoutConstraint.activate([
+            updateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
+            updateButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            updateButton.widthAnchor.constraint(equalToConstant: 120),
+            updateButton.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        updateButton.addTarget(self, action: #selector(tapOn), for: .touchUpInside)
+
+    }
     
+    func setupBinding() {
+        viewModel?.numberOfPage.bind(listener: { [unowned self] number in
+            self.collectionView.reloadData()
+            self.getNewPageFlag = true
+        })
+        
+        viewModel?.numberOfNewArticles.bind(listener: { [unowned self] number in
+            if number > 0 {
+            self.updateButton.isHidden = false
+            self.updateButton.setTitle("Download +\(number)", for: .normal)
+            } else {
+            self.updateButton.isHidden = true
+            }
+        })
+    }
+    
+    @objc func tapOn() {
+        viewModel?.numberOfNewArticles.value = 0
+        collectionView.reloadData()
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+        collectionView.contentOffset.y = -10
+       
+    }
+
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let bottom = scrollView.contentOffset.y + scrollView.frame.size.height
         if bottom >= scrollView.contentSize.height - 400 && getNewPageFlag {
              getNewPageFlag = false
-        viewModel?.getArticles((viewModel?.numberOfArticle.value)! + 1)
+        viewModel?.getArticles((viewModel?.numberOfPage.value)! + 1)
         }
     }
     
@@ -74,13 +125,7 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
         layout.invalidateLayout()
     }
    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        
-        
-    }
-    
+//MARK: Initialization
     
     init(layout: UICollectionViewLayout, viewModel: MainViewModelType) {
         super.init(collectionViewLayout: layout)
@@ -91,25 +136,17 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
         fatalError("init(coder:) has not been implemented")
     }
     
-  
+}
 
+// MARK: UICollectionViewDataSource & Delegate
 
-// MARK: UICollectionViewDataSource
-
-
+extension MainViewController {
+    
+   // DataSource
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel?.numberOfItems() ?? 0
     }
 
-   
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: collectionView.frame.width - 16, height: 80)
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
-//    }
-    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? ArticleCell
     
@@ -122,39 +159,16 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
         
         collectionViewCell.viewModel = cellViewModel
-        
+       
         return collectionViewCell
     }
 
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
+    //Delegate
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let detailsViewModel = viewModel?.viewModelForSelectedArticle(forIndexPath: indexPath) else { return }
+        
+        let vc = DetailsViewController(viewModel: detailsViewModel)
+        navigationController?.pushViewController(vc, animated: true)
     }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
 
 }

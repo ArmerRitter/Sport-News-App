@@ -43,4 +43,7 @@ extension UIColor {
     class var otherColor: UIColor {
         return #colorLiteral(red: 0.4156862745, green: 0.462745098, blue: 0.4549019608, alpha: 1)
     }
+    class var championatColor: UIColor {
+        return #colorLiteral(red: 0.9647058824, green: 0.2823529412, blue: 0.003921568627, alpha: 1)
+    }
 }
