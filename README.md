@@ -2,7 +2,7 @@
 
 Sport News Client (example championat.com)
 
-I'm using SwiftSoup for parsing and MVVM
+I'm using SwiftSoup for parsing and MVVM pattern
 
 Enjoy
 
