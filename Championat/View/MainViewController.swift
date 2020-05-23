@@ -43,30 +43,11 @@ class MainViewController: UICollectionViewController, UICollectionViewDelegateFl
         setupBinding()
         setupView()
         
-        
-        
         collectionView.backgroundColor = .white
-        
-        //Demo button
-        let newRecordButton: UIBarButtonItem = {
-            let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
-            
-            return button
-        }()
-        
-        
-        navigationItem.rightBarButtonItem = newRecordButton
-        
         // Register cell classes
         self.collectionView!.register(ArticleCell.self, forCellWithReuseIdentifier: cellId)
     }
-    
-    @objc func add() {
-        collectionView.reloadData()
-        updateButton.isHidden = false
-        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
-        collectionView.contentOffset.y = -10
-    }
+   
     
     func setupView() {
         navigationController?.navigationBar.barStyle = UIBarStyle.black

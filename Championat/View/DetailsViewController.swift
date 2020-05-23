@@ -15,22 +15,24 @@ class DetailsViewController: UITableViewController {
     let cellImageId = "ImageCell"
     let cellHeaderId = "HeaderCell"
     
+    let titleImage: UIImageView = {
+       let imageView = UIImageView()
+       let image = UIImage(named: "logo8")
+       imageView.contentMode = .scaleAspectFit
+       imageView.image = image
+       return imageView
+    }()
+    
 //MARK: ViewDidload
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newRecordButton: UIBarButtonItem = {
-            let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
-            
-            return button
-        }()
+        navigationItem.titleView = titleImage
         
         viewModel?.articleIsReady.bind(listener: { [unowned self] ready in
             self.tableView.reloadData()
         })
-        
-        navigationItem.rightBarButtonItem = newRecordButton
         
         tableView.separatorStyle = .none
         tableView.register(DetailsBodyTextCell.self, forCellReuseIdentifier: cellTextId)
@@ -39,13 +41,6 @@ class DetailsViewController: UITableViewController {
         
     }
     
-    @objc func add() {
-        tableView.reloadData()
-        tableView.beginUpdates()
-        
-        tableView.endUpdates()
-    }
-
 //MARK: Initialization
     
     init(viewModel: DetailsViewModelType) {
